@@ -2,7 +2,36 @@ $(document).ready(function() {
     $('.carousel').slick({
         dots: true,
         arrows: true,
+        slidesToShow: 3,
+        infinite: true,
+        slidesToScroll: 3,
+        // responsive: [
+        //     {
+        //         breakpoint: 1024,
+        //         settings: {
+        //             slidesToShow: 3,
+        //             slidesToScroll: 3,
+        //             infinite: true,
+        //             dots: true
+        //         }
+        //     },
+        //     {
+        //         breakpoint: 600,
+        //         settings: {
+        //             slidesToShow: 2,
+        //             slidesToScroll: 2
+        //         }
+        //     },
+        //     {
+        //         breakpoint: 480,
+        //         settings: {
+        //             slidesToShow: 3,
+        //             slidesToScroll: 3
+        //         }
+        //     }
+        //     ]
     });
+
 
     const wishlist = [];
     const pendingOrders = JSON.parse(localStorage.getItem('pendingOrders')) || [];
@@ -16,7 +45,7 @@ $(document).ready(function() {
         wishlist.forEach(item => {
             total += item.price;
             $wishlistItems.append(
-                `<li>${item.name} - $${item.price.toFixed(2)} <button class="remove-item" data-id="${item.id}">Eliminar</button></li>`
+                `<li>${item.name} - $${item.price.toFixed(2)} <button class="remove-item" data-id="${item.id}">X</button></li>`
             );
         });
 
@@ -29,7 +58,7 @@ $(document).ready(function() {
 
         pendingOrders.forEach((order, index) => {
             $pendingOrdersList.append(
-                `<li>Orden ${index + 1}: ${order.items.map(item => item.name).join(', ')} - Total: $${order.total.toFixed(2)} <button class="delete-order" data-index="${index}">Eliminar</button></li>`
+                `<li>Orden ${index + 1}: ${order.items.map(item => item.name).join(', ')} <br> Total: $${order.total.toFixed(2)} <button class="delete-order" data-index="${index}">Eliminar</button></li>`
             );
         });
         localStorage.setItem('pendingOrders', JSON.stringify(pendingOrders));
@@ -78,6 +107,26 @@ $(document).ready(function() {
 
     $('#floating-menu').click(function() {
         $('.wishlist, .pending-orders').toggle();
+    });
+
+    const elemento = document.getElementById('pending-orders');
+    let offsetX, offsetY;
+    let arrastrando = false;
+
+    elemento.addEventListener('mousedown', (e) => {
+        arrastrando = true;
+        offsetX = e.clientX - elemento.offsetLeft;
+        offsetY = e.clientY - elemento.offsetTop;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!arrastrando) return;
+        elemento.style.left = e.clientX - offsetX + 'px';
+        elemento.style.top = e.clientY - offsetY + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        arrastrando = false;
     });
 
     updatePendingOrders();
