@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    color: #2f855a;
+}
+header {
+    background-color: #2f855a;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    font-size: 1.5rem;
+}
+main {
+    padding: 1rem;
+}
+section {
+    margin-bottom: 2rem;
+}
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+.card {
+    border: 1px solid #2f855a;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.card img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+.card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+.card p {
+    font-size: 1rem;
+    font-weight: bold;
+}
+.card button {
+    background-color: #2f855a;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0.5rem 0;
+}
+.card button:hover {
+    background-color: #276749;
+}
+.wishlist, .pending-orders {
+    position: fixed;
+    bottom: 1rem;
+    background-color: #2f855a;
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+}
+.wishlist {
+    right: 1rem;
+}
+.pending-orders {
+    left: 1rem;
+}
+.wishlist ul, .pending-orders ul {
+    list-style: none;
+    padding: 0;
+}
+.wishlist ul li, .pending-orders ul li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+.wishlist button, .pending-orders button {
+    background-color: #e53e3e;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.wishlist button:hover, .pending-orders button:hover {
+    background-color: #c53030;
+}
+footer {
+    background-color: #2f855a;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+}
+.carousel {
+    max-width: 600px;
+    margin: auto;
+}
