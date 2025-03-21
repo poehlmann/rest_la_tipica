@@ -63,6 +63,7 @@ h2 {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 300px;
+    display: none; /* Oculto por defecto */
 }
 .wishlist {
     right: 1rem;
@@ -99,4 +100,27 @@ footer {
 .carousel {
     max-width: 600px;
     margin: auto;
+}
+.floating-menu {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 100;
+    background-color: #2f855a;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+}
+.floating-menu:hover {
+    background-color: #276749;
+}
+
+@media (min-width: 768px) {
+    .wishlist, .pending-orders {
+        display: block; /* Mostrar en pantallas más grandes */
+    }
+    .floating-menu {
+        display: none; /* Ocultar el botón flotante en pantallas grandes */
+    }
 }
