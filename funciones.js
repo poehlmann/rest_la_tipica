@@ -35,7 +35,8 @@ $(document).ready(function() {
 
     const wishlist = [];
     const pendingOrders = JSON.parse(localStorage.getItem('pendingOrders')) || [];
-
+    const order = document.getElementById('wishlist');
+    const pending = document.getElementById('pending-orders');
     function updateWishlist() {
         const $wishlistItems = $('#wishlist-items');
         const $wishlistTotal = $('#wishlist-total');
@@ -106,27 +107,20 @@ $(document).ready(function() {
     });
 
     $('#floating-menu').click(function() {
-        $('.wishlist, .pending-orders').toggle();
+        if (order.style.display === "none") {
+            order.style.display = "block";
+            pending.style.display = "none";
+        } else {
+            order.style.display = "none";
+        }
     });
-
-    const elemento = document.getElementById('pending-orders');
-    let offsetX, offsetY;
-    let arrastrando = false;
-
-    elemento.addEventListener('mousedown', (e) => {
-        arrastrando = true;
-        offsetX = e.clientX - elemento.offsetLeft;
-        offsetY = e.clientY - elemento.offsetTop;
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (!arrastrando) return;
-        elemento.style.left = e.clientX - offsetX + 'px';
-        elemento.style.top = e.clientY - offsetY + 'px';
-    });
-
-    document.addEventListener('mouseup', () => {
-        arrastrando = false;
+    $('#floating-pending').click(function() {
+        if (pending.style.display === "none") {
+            pending.style.display = "block";
+            order.style.display = "none";
+        } else {
+            pending.style.display = "none";
+        }
     });
 
     updatePendingOrders();
