@@ -46,7 +46,7 @@ $(document).ready(function() {
         wishlist.forEach(item => {
             total += item.price;
             $wishlistItems.append(
-                `<li>${item.name} - $${item.price.toFixed(2)} <button class="remove-item" data-id="${item.id}">X</button></li>`
+                `<li>${item.name} - ${item.price.toFixed(2)} Bs. <button class="remove-item" data-id="${item.id}">X</button></li>`
             );
         });
 
@@ -73,6 +73,10 @@ $(document).ready(function() {
 
         wishlist.push({ id, name, price });
         updateWishlist();
+        if (order.style.display === "none" || order.style.display === "") {
+            order.style.display = "block";
+            pending.style.display = "none";
+        }
     });
 
     $('body').on('click', '.remove-item', function() {
@@ -97,6 +101,12 @@ $(document).ready(function() {
             wishlist.length = 0;
             updateWishlist();
             updatePendingOrders();
+            if (pending.style.display === "none" || pending.style.display === "") {
+                pending.style.display = "block";
+                order.style.display = "none";
+            } else {
+                pending.style.display = "none";
+            }
         }
     });
 
@@ -107,7 +117,7 @@ $(document).ready(function() {
     });
 
     $('#floating-menu').click(function() {
-        if (order.style.display === "none") {
+        if (order.style.display === "none" || order.style.display === "") {
             order.style.display = "block";
             pending.style.display = "none";
         } else {
@@ -115,12 +125,21 @@ $(document).ready(function() {
         }
     });
     $('#floating-pending').click(function() {
-        if (pending.style.display === "none") {
+        if (pending.style.display === "none" || pending.style.display === "") {
             pending.style.display = "block";
             order.style.display = "none";
         } else {
             pending.style.display = "none";
         }
+    });
+
+    $('body').on('click', '.share', function () {
+        const $card = $(this).closest('.card');
+        const name = $card.data('name');
+        const price = parseFloat($card.data('price'));
+        const message = `¡Mira este plato de La Típica! ${name} por ${price.toFixed(2)} Bs.`;
+        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
     });
 
     updatePendingOrders();

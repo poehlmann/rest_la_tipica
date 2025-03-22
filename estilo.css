@@ -106,7 +106,7 @@ footer {
 }
 .floating-menu {
     position: fixed;
-    bottom: 1rem;
+    bottom: 2rem;
     right: 1rem;
     z-index: 100;
     background-color: #000000;
@@ -117,7 +117,7 @@ footer {
 }
 .floating-pending {
     position: fixed;
-    bottom: 1rem;
+    bottom: 2rem;
     left: 1rem;
     z-index: 100;
     background-color: #000000;
