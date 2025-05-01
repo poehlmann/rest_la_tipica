@@ -1,16 +1,81 @@
+.lobster-regular {
+    font-family: "Lobster", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+.roboto {
+     font-family: "Roboto", sans-serif;
+     font-optical-sizing: auto;
+     font-weight: normal;
+     font-style: normal;
+}
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Roboto", sans-serif;
     margin: 0;
     padding: 0;
     background-color: white;
     color: #2f855a;
 }
 header {
-    background-color: #2f855a;
+    font-family: "Lobster", sans-serif;
+    background: #2F855A;
+    background: linear-gradient(180deg,rgba(47, 133, 90, 1) 0%, rgba(31, 82, 48, 1) 76%);
     color: white;
     text-align: center;
     padding: 1rem;
     font-size: 1.5rem;
+}
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.popup-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+.popup-content h3 {
+    margin-bottom: 1rem;
+}
+.popup-content select, .popup-content button {
+    padding: 0.5rem;
+    margin: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #2f855a;
+}
+.popup-content button {
+    background: #2f855a;
+    color: white;
+    cursor: pointer;
+}
+.popup-content button:hover {
+    background: #276749;
+}
+.popup-qr {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.popup-qr img {
+    max-width: 300px;
+    max-height: 300px;
 }
 main {
     padding: 1rem;
@@ -19,15 +84,19 @@ section {
     margin-bottom: 2rem;
 }
 h2 {
+    font-family: "Lobster", sans-serif;
     font-size: 1.5rem;
     margin-bottom: 1rem;
 }
 .card {
-    border: 1px solid #2f855a52;
-    border-radius: 10px;
-    padding: 1rem;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #F4F1E0;
+    color: #004225;
+    border: 1px solid #8B5A2B;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 1px;
+    box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.1);
 }
 .card img {
     max-width: 100%;
@@ -145,3 +214,50 @@ iframe {
     max-width: 100%;
     height: auto;
 }
+section:nth-child(odd) {
+    background-color: #f9f9f9;
+    /*padding: 2rem 1rem;*/
+    border-top: 2px solid #2f855a;
+}
+
+section:nth-child(even) {
+    background-color: #ffffff;
+    /*padding: 2rem 1rem;*/
+    border-top: 2px solid #2f855a;
+
+}
+
+/* Estilo de encabezados */
+section h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #2f855a;
+    background-color: #edf2f7;
+    padding: 0.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    margin-top :0;
+}
+
+/* Espaciado adicional */
+section {
+    margin-bottom: 2rem;
+    border-radius: 10px;
+}
+
+/* Bordes y sombras para las tarjetas */
+.card {
+    border: 1px solid #2f855a30;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+

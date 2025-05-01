@@ -124,6 +124,7 @@ $(document).ready(function() {
             order.style.display = "none";
         }
     });
+
     $('#floating-pending').click(function() {
         if (pending.style.display === "none" || pending.style.display === "") {
             pending.style.display = "block";
@@ -143,4 +144,62 @@ $(document).ready(function() {
     });
 
     updatePendingOrders();
+
+
+});
+document.addEventListener('DOMContentLoaded', function () {
+    const userPopup = document.getElementById('user-popup');
+    const userSelector = document.getElementById('user-selector');
+    const confirmUserButton = document.getElementById('confirm-user');
+
+    const qrPopup = document.getElementById('qr-popup');
+    const qrCloseButton = document.getElementById('close-qr');
+    const qrImage = document.getElementById('qr-image');
+
+    // Mostrar popup de usuario si no hay usuario seleccionado
+    const selectedUser = localStorage.getItem('selectedUser');
+    if (!selectedUser) {
+        userPopup.style.display = 'flex';
+    }else{
+        userPopup.style.display = 'none';
+    }
+
+    confirmUserButton.addEventListener('click', function () {
+        const selectedValue = userSelector.value;
+        if (selectedValue) {
+            localStorage.setItem('selectedUser', selectedValue);
+            userPopup.style.display = 'none';
+        } else {
+            alert('Por favor seleccione un usuario.');
+        }
+    });
+
+    // Mostrar popup de QR al eliminar orden
+    function showQrPopup() {
+        qrPopup.style.display = 'flex';
+    }
+
+    qrCloseButton.addEventListener('click', function () {
+        qrPopup.style.display = 'none';
+    });
+
+    // Ejemplo: Simular eliminación de una orden
+    document.body.addEventListener('click', function (e) {
+        if (e.target.classList.contains('delete-order')) {
+            showQrPopup();
+        }
+    });
+
+    // Guardar pagos en cookies
+    function saveToCookies(order) {
+        const orders = JSON.parse(getCookie('orders') || '[]');
+        orders.push(order);
+        document.cookie = `orders=${JSON.stringify(orders)}; path=/;`;
+    }
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
 });
