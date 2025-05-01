@@ -46,7 +46,7 @@ $(document).ready(function() {
         wishlist.forEach(item => {
             total += item.price;
             $wishlistItems.append(
-                `<li>${item.name} - ${item.price.toFixed(2)} Bs. <button class="remove-item" data-id="${item.id}">X</button></li>`
+                `<li >${item.name} - ${item.price.toFixed(2)} Bs. <button class="remove-item" data-id="${item.id}">X</button></li>`
             );
         });
 
@@ -59,7 +59,7 @@ $(document).ready(function() {
 
         pendingOrders.forEach((order, index) => {
             $pendingOrdersList.append(
-                `<li>Orden ${index + 1}: ${order.items.map(item => item.name).join(', ')} <br> Total: $${order.total.toFixed(2)} <button class="delete-order" data-index="${index}">Eliminar</button></li>`
+                `<li class="order-total">Orden ${index + 1}: ${order.items.map(item => item.name).join(', ')} <br> Total: ${order.total.toFixed(2)} Bs. <button class="delete-order" data-index="${index}">Eliminar</button></li>`
             );
         });
         localStorage.setItem('pendingOrders', JSON.stringify(pendingOrders));
@@ -143,6 +143,8 @@ $(document).ready(function() {
         window.open(url, '_blank');
     });
 
+
+
     updatePendingOrders();
 
 
@@ -151,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const userPopup = document.getElementById('user-popup');
     const userSelector = document.getElementById('user-selector');
     const confirmUserButton = document.getElementById('confirm-user');
-
+    const totalAmount = document.getElementById('total-amount');
     const qrPopup = document.getElementById('qr-popup');
     const qrCloseButton = document.getElementById('close-qr');
     const qrImage = document.getElementById('qr-image');
@@ -175,7 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Mostrar popup de QR al eliminar orden
-    function showQrPopup() {
+    function showQrPopup(detail_order) {
+        totalAmount.textContent =detail_order;
         qrPopup.style.display = 'flex';
     }
 
@@ -186,7 +189,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Ejemplo: Simular eliminación de una orden
     document.body.addEventListener('click', function (e) {
         if (e.target.classList.contains('delete-order')) {
-            showQrPopup();
+            const parentLi = event.target.closest("li");
+            const clone = parentLi.cloneNode(true);
+            clone.querySelector("button").remove();
+            const liText = clone.textContent.trim();
+            console.log("Texto al lado del botón:", liText);
+
+            showQrPopup(liText);
         }
     });
 
