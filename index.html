@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Restaurante Avanzado</title>
+    <title>La tipica</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
 
 <div class="flex flex-col md:flex-row min-h-screen">
     <nav class="w-full md:w-64 bg-gray-800 text-white p-5 space-y-2">
-        <h1 class="text-2xl font-bold mb-6 text-center">RestaurantePRO</h1>
+        <h1 class="text-2xl font-bold mb-6 text-center">La Tipica</h1>
 
         <div class="mb-4">
             <label for="role-selector" class="block text-sm font-medium text-gray-300 mb-1">Rol Actual:</label>
@@ -462,9 +462,9 @@
             }
 
             const currentActiveView = document.querySelector('.view.active');
-            if (currentActiveView && currentActiveView.id !== viewId) {
-                this.cleanupView(currentActiveView.id);
-            }
+            // if (currentActiveView && currentActiveView.id !== viewId) {
+            //     this.cleanupView(currentActiveView.id);
+            // }
 
             this.dom.views.forEach(view => view.classList.remove('active'));
             const targetView = document.getElementById(viewId);
@@ -1013,78 +1013,41 @@
         },
 
         // --- PEDIDO LOGIC ---
-        handleMesaClick(mesaId) {
-            const mesa = this.data.mesas.find(m => m.id === mesaId);
+        handleMesaClick(mesaId) { // mesaId es el id_mesa de la base de datos
+            const mesa = this.data.mesas.find(m => m.id_mesa === mesaId);
             if (!mesa) return;
 
-            this.dom.modalMesaNumeroDisplay.textContent = `${mesa.nombre || 'Mesa ' + mesa.numero}`;
-            this.renderModalMenu();
+            this.dom.modalMesaNumeroDisplay.textContent = `${mesa.nombre_alias || 'Mesa ' + mesa.numero_mesa}`;
+            this.renderModalMenu(); // Esto usa this.data.menuItems que ya está cargado
 
             if (mesa.estado === 'disponible') {
-                // Nueva orden
                 this.currentPedidoEditor = {
-                    mesaId: mesaId,
-                    pedidoId: null,
+                    mesaId: mesaId, // id_mesa
+                    pedidoId: null, // id_pedido (null para nuevo)
                     items: [],
                     total: 0,
                     nota: ''
                 };
-            } else {
-                // Editar orden existente
-                const pedidoExistente = this.data.pedidos.find(p => p.id === mesa.pedidoIdActual && p.estadoCobro === 'pendiente_cobro');
+            } else { // Mesa ocupada, podría tener un pedido activo
+                // Buscar el pedido activo para esta mesa en this.data.pedidos
+                // La lógica para encontrar el pedidoIdActual de la mesa puede necesitar ajustarse
+                // si la API de mesas no devuelve directamente el 'pedidoIdActual'.
+                // Por ahora, asumimos que this.data.pedidos tiene los pedidos activos.
+                const pedidoExistente = this.data.pedidos.find(p => p.id_mesa === mesaId && p.estado_cobro === 'pendiente_cobro');
+
                 if (pedidoExistente) {
                     this.currentPedidoEditor = {
                         mesaId: mesaId,
-                        pedidoId: pedidoExistente.id,
-                        items: JSON.parse(JSON.stringify(pedidoExistente.items)), // Deep copy
-                        total: pedidoExistente.total,
+                        pedidoId: pedidoExistente.id_pedido,
+                        items: JSON.parse(JSON.stringify(pedidoExistente.items)), // items del pedido: {id_menu_item, cantidad, precio_unitario_cobrado}
+                        total: parseFloat(pedidoExistente.total_pedido),
                         nota: pedidoExistente.nota || ''
                     };
                 } else {
-                    // Caso raro: mesa ocupada pero sin pedido editable. Crear uno nuevo.
-                    console.warn(`Mesa ${mesaId} ocupada pero sin pedido editable. Creando uno nuevo.`);
+                    console.warn(`Mesa ${mesaId} ocupada pero sin pedido activo editable encontrado. Creando uno nuevo.`);
                     this.currentPedidoEditor = {
                         mesaId: mesaId,
-                        pedidoId: null,// Nueva función para limpiar vistas
-                        cleanupView(viewId) {
-                            console.log("Limpiando vista:", viewId);
-                            switch(viewId) {
-                                case 'reporte-grafico-view':
-                                    if (this.graficos.platosMasVendidos) {
-                                        this.graficos.platosMasVendidos.destroy();
-                                        this.graficos.platosMasVendidos = null;
-                                    }
-                                    if (this.dom.mensajeNoDatosGrafico) {
-                                        this.dom.mensajeNoDatosGrafico.style.display = 'none'; // Ocultar mensaje
-                                        this.dom.mensajeNoDatosGrafico.textContent = 'No hay datos de ventas para el mes seleccionado.'; // Resetear texto
-                                    }
-                                    // El canvas se limpia al destruir el chart.
-                                    break;
-                                case 'historial-pedidos-view':
-                                    if (this.dom.reporteDiarioResultado) this.dom.reporteDiarioResultado.innerHTML = '<p class="text-gray-500 italic">Seleccione una fecha y genere el reporte.</p>';
-                                    if (this.dom.reporteMensualResultado) this.dom.reporteMensualResultado.innerHTML = '<p class="text-gray-500 italic">Seleccione un mes y genere el reporte.</p>';
-                                    if (this.dom.listaHistorialPedidos) this.dom.listaHistorialPedidos.innerHTML = ''; // Limpiar lista
-                                    if (this.dom.noHistorialPedidosMsg) this.dom.noHistorialPedidosMsg.style.display = 'block'; // Mostrar mensaje por defecto
-                                    if (this.dom.totalHistoricoVentasDisplay) this.dom.totalHistoricoVentasDisplay.textContent = 'Bs. 0.00';
-                                    break;
-                                case 'cocina-view':
-                                    if (this.dom.cocinaPendientes) this.dom.cocinaPendientes.innerHTML = '';
-                                    if (this.dom.cocinaPreparacion) this.dom.cocinaPreparacion.innerHTML = '';
-                                    if (this.dom.cocinaEntregados) this.dom.cocinaEntregados.innerHTML = '';
-                                    break;
-                                case 'cobros-view':
-                                    if (this.dom.ordenesPorCobrarContainer) this.dom.ordenesPorCobrarContainer.innerHTML = '';
-                                    if (this.dom.noOrdenesPorCobrarMsg) this.dom.noOrdenesPorCobrarMsg.style.display = 'block';
-                                    break;
-                                case 'gestion-menu-view':
-                                    if (this.dom.menuItemsListAdmin) this.dom.menuItemsListAdmin.innerHTML = '';
-                                    break;
-                                case 'gestion-mesas-view':
-                                    if (this.dom.listaGestionMesas) this.dom.listaGestionMesas.innerHTML = '';
-                                    break;
-                            }
-                        },
-
+                        pedidoId: null,
                         items: [],
                         total: 0,
                         nota: ''
