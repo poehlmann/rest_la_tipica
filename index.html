@@ -1,167 +1,1360 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Típica - Catálogo</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="estilo.css"/>
+    <title>Sistema de Gestión de Restaurante Avanzado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .view { display: none; }
+        .view.active { display: block; }
+        .nav-link { transition: background-color 0.2s, color 0.2s; }
+        .nav-link.active { background-color: #4f46e5; color: white; }
+        .mesa { transition: background-color 0.3s ease, transform 0.2s ease; }
+        .mesa:hover { transform: translateY(-5px); }
+        .mesa.disponible { background-color: #34d399; color: #065f46; } /* emerald-400, emerald-800 */
+        .mesa.ocupada { background-color: #f87171; color: #991b1b; } /* red-400, red-800 */
+        .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;}
+        .modal.active { display: flex; }
+        .modal-content { background-color: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;}
+        .btn:active { transform: scale(0.97); }
+        .badge { display: inline-block; padding: 0.3em 0.7em; font-size: 0.75rem; font-weight: 600; line-height: 1; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: 0.375rem; }
+        .badge-blue { background-color: #3b82f6; color: white; } /* blue-500 */
+        .badge-yellow { background-color: #f59e0b; color: #78350f; } /* amber-500, amber-800 */
+        .badge-green { background-color: #22c55e; color: white; } /* green-500 */
+        .badge-red { background-color: #ef4444; color: white; } /* red-500 */
+        .kitchen-column { min-height: 300px; }
+    </style>
 </head>
-<body>
+<body class="text-gray-800">
 
-<header>
-    La Típica
-</header>
+<div class="flex flex-col md:flex-row min-h-screen">
+    <nav class="w-full md:w-64 bg-gray-800 text-white p-5 space-y-2">
+        <h1 class="text-2xl font-bold mb-6 text-center">RestaurantePRO</h1>
 
-<main>
-    <div class="popup" id="user-popup">
-        <div class="popup-content">
-            <h3>Seleccione su usuario</h3>
-            <select id="user-selector">
-                <option value="">Seleccione...</option>
-                <option value="Ivon">Ivon</option>
+        <div class="mb-4">
+            <label for="role-selector" class="block text-sm font-medium text-gray-300 mb-1">Rol Actual:</label>
+            <select id="role-selector" class="w-full bg-gray-700 text-white border-gray-600 rounded-md p-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="admin">Administrador</option>
+                <option value="mesero" selected>Mesero</option>
+                <option value="cocina">Cocina</option>
             </select>
-            <br>
-            <button id="confirm-user">Confirmar</button>
         </div>
-    </div>
 
-    <div class="popup-qr" id="qr-popup">
-        <div class="popup-content">
-            <h3>Escanee este código QR</h3>
-            <img id="qr-image" src="recursos/img/QR.png" alt="Código QR">
-            <br>
-            <h2 class="text-lg font-bold mb-2">Detalle del Pago</h2>
-            <p id="total-amount" class="text-lg font-semibold text-green-600"></p>
-            <br>
-            <button id="close-qr">Cerrar</button>
-        </div>
-    </div>
-    <section id="bebidas">
-        <h2>Bebidas</h2>
-        <div class="carousel">
-            <div class="card" data-id="1" data-name="vaso refresco" data-price="3">
-                <img src="recursos/img/vaso_limonada.jpg" alt="vaso refresco - la tipica restaurante">
-                <h3>Vaso de refresco</h3>
-                <p>Bs 3</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-<!--                <button class="share">Compartir</button>-->
-            </div>
-            <div class="card" data-id="2" data-name="jarra_pequenha" data-price="7">
-                <img src="recursos/img/jarra_de_limonada.jpeg" alt="jarra pequeña - la tipica restaurante">
-                <h3>Jarra pequeña</h3>
-                <p>Bs 7</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-<!--                <button class="share">Compartir</button>-->
-            </div>
-            <div class="card" data-id="3" data-name="jarra_grande" data-price="7">
-                <img src="recursos/img/jarra_de_limonada.jpeg" alt="jarra grande - la tipica restaurante">
-                <h3>Jarra Grande</h3>
-                <p>Bs 14</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-                <!--                <button class="share">Compartir</button>-->
-            </div>
-            <div class="card" data-id="4" data-name="soda" data-price="7">
-                <img src="recursos/img/coca_cola.jpg" alt="Coca Cola">
-                <h3>Soda</h3>
-                <p>Bs 7</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-<!--                <button class="share">Compartir</button>-->
-            </div>
-            <div class="card" data-id="5" data-name="tropy fruit" data-price="7">
-                <img src="recursos/img/tropy_fruit.png" alt="Tropy Fruit">
-                <h3>Tropy Fruit</h3>
-                <p>Bs 7</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-                <!--                <button class="share">Compartir</button>-->
-            </div>
-        </div>
-    </section>
+        <a href="#" class="nav-link block py-2.5 px-4 rounded hover:bg-gray-700 mesero-only" data-view="mesas-view"><i class="fas fa-concierge-bell mr-2"></i>Mesas y Pedidos</a>
+        <a href="#" class="nav-link block py-2.5 px-4 rounded hover:bg-gray-700 cocina-only" data-view="cocina-view"><i class="fas fa-utensils mr-2"></i>Pantalla de Cocina</a>
+        <a href="#" class="nav-link block py-2.5 px-4 rounded hover:bg-gray-700 admin-only" data-view="cobros-view"><i class="fas fa-cash-register mr-2"></i>Cuentas por Cobrar</a>
+        <a href="#" class="nav-link block py-2.5 px-4 rounded hover:bg-gray-700 admin-only" data-view="historial-pedidos-view"><i class="fas fa-history mr-2"></i>Historial y Reportes</a>
+        <a href="#" class="nav-link block py-2.5 px-4 rounded hover:bg-gray-700 admin-only" data-view="reporte-grafico-view"><i class="fas fa-chart-pie mr-2"></i>Reporte Gráfico Ventas</a>
+        <a href="#" class="nav-link block py-2.5 px-4 rounded hover:bg-gray-700 admin-only" data-view="gestion-menu-view"><i class="fas fa-book-open mr-2"></i>Gestión de Menú</a>
+        <a href="#" class="nav-link block py-2.5 px-4 rounded hover:bg-gray-700 admin-only" data-view="gestion-mesas-view"><i class="fas fa-chair mr-2"></i>Gestión de Mesas</a>
+    </nav>
 
-    <section id="comida">
-        <h2>Comida</h2>
-        <div class="carousel">
-            <div class="card" data-id="6" data-name="locro" data-price="13">
-                <img src="recursos/img/locro.jpg" alt="locro - la tipica restaurante">
-                <h3>Locro de Gallina</h3>
-                <p>Bs 13</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-            </div>
-            <div class="card" data-id="7" data-name="majadito_batido" data-price="15">
-                <img src="recursos/img/majadito_batido.jpg" alt="majadito batido - la tipica restaurante">
-                <h3>Majadito Batido</h3>
-                <p>Bs 15</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-            </div>
-            <div class="card" data-id="8" data-name="majadito_tostado" data-price="15">
-                <img src="recursos/img/majadito_tostado.jpg" alt="majadito tostado - la tipica restaurante">
-                <h3>Majadito Tostado</h3>
-                <p>Bs 15</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-            </div>
-            <div class="card" data-id="9" data-name="picante_de_lengua" data-price="15">
-                <img src="recursos/img/picante_de_lengua.jpg" alt="picante de lengua - la tipica restaurante">
-                <h3>Picante de Lengua</h3>
-                <p>Bs 15</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-            </div>
-            <div class="card" data-id="10" data-name="picante_mixto" data-price="30">
-                <img src="recursos/img/picante_mixto.jpg" alt="picante mixto - la tipica restaurante">
-                <h3>Picante Mixto</h3>
-                <p>Bs 30</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-            </div>
-            <div class="card" data-id="11" data-name="rapi_al_jugo" data-price="15">
-                <img src="recursos/img/rapi_al_jugo.jpg" alt="rapi al jugo - la tipica restaurante">
-                <h3>Rapi al Jugo</h3>
-                <p>Bs 15</p>
-                <button class="wishlist-add">Agregar a la lista</button>
-            </div>
-            <div class="card" data-id="6" data-name="picante_de_gallina_criolla" data-price="20">
-                <img src="recursos/img/picante_mixto.jpg" alt="picante de gallina criolla - la tipica restaurante">
-                <h3>Picante de Gallina</h3>
-                <p>Bs 20</p>
-                <button class="wishlist-add">Agregar a la lista</button>
+    <main class="flex-1 p-6 md:p-10 overflow-auto">
+        <div id="mesas-view" class="view">
+            <h2 class="text-3xl font-semibold mb-6 text-gray-700">Estado de Mesas y Pedidos</h2>
+            <div id="mesas-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
             </div>
         </div>
-    </section>
-</main>
 
-<div id="wishlist" class="wishlist">
-    <h3>Lista de Deseos</h3>
-    <ul id="wishlist-items"></ul>
-    <p>Total: <span id="wishlist-total">0.00</span> Bs.</p>
-    <button id="wishlist-order">Pedir orden</button>
-    <br><br>
-    <button id="wishlist-clear">Borrar todo</button>
+        <div id="cocina-view" class="view">
+            <h2 class="text-3xl font-semibold mb-6 text-gray-700">Pantalla de Cocina</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-4 rounded-lg shadow-md kitchen-column">
+                    <h3 class="text-xl font-semibold mb-3 text-red-600 border-b pb-2">Pendientes</h3>
+                    <div id="cocina-pendientes" class="space-y-3"></div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md kitchen-column">
+                    <h3 class="text-xl font-semibold mb-3 text-yellow-600 border-b pb-2">En Preparación</h3>
+                    <div id="cocina-preparacion" class="space-y-3"></div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md kitchen-column">
+                    <h3 class="text-xl font-semibold mb-3 text-green-600 border-b pb-2">Listos para Servir</h3>
+                    <div id="cocina-entregados" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="cobros-view" class="view">
+            <h2 class="text-3xl font-semibold mb-6 text-gray-700">Cuentas por Cobrar</h2>
+            <div id="ordenes-por-cobrar-container" class="space-y-4">
+                <p id="no-ordenes-por-cobrar" class="text-gray-500 italic">No hay cuentas pendientes de cobro.</p>
+            </div>
+        </div>
+
+        <div id="historial-pedidos-view" class="view admin-only">
+            <h2 class="text-3xl font-semibold mb-6 text-gray-700">Historial de Pedidos y Reportes</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-5 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-3 text-indigo-600">Reporte Diario</h3>
+                    <div class="flex items-center space-x-2 mb-3">
+                        <input type="date" id="reporte-diario-fecha" class="p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 flex-grow">
+                        <button id="btn-generar-reporte-diario" class="btn bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow"><i class="fas fa-search mr-1"></i> Generar</button>
+                    </div>
+                    <div id="reporte-diario-resultado" class="report-section border-t pt-3 mt-3">
+                        <p class="text-gray-500 italic">Seleccione una fecha y genere el reporte.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-3 text-indigo-600">Reporte Mensual</h3>
+                    <div class="flex items-center space-x-2 mb-3">
+                        <input type="month" id="reporte-mensual-mes" class="p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 flex-grow">
+                        <button id="btn-generar-reporte-mensual" class="btn bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow"><i class="fas fa-search mr-1"></i> Generar</button>
+                    </div>
+                    <div id="reporte-mensual-resultado" class="report-section border-t pt-3 mt-3">
+                        <p class="text-gray-500 italic">Seleccione un mes y genere el reporte.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-semibold mb-4 text-gray-700">Todos los Pedidos Cobrados</h3>
+            <p class="mb-4 text-lg">Total Histórico de Ventas: <strong id="total-historico-ventas" class="text-green-700">Bs. 0.00</strong></p>
+            <div id="lista-historial-pedidos" class="space-y-4 report-section">
+                <p id="no-historial-pedidos" class="text-gray-500 italic">No hay pedidos cobrados en el historial.</p>
+            </div>
+        </div>
+
+        <div id="reporte-grafico-view" class="view admin-only">
+            <h2 class="text-3xl font-semibold mb-6 text-gray-700">Reporte Gráfico: Platos Más Vendidos</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 class="text-xl font-semibold mb-4 text-indigo-600">Filtrar por Mes</h3>
+                <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                    <input type="month" id="reporte-grafico-mes-input" class="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 flex-grow w-full sm:w-auto shadow-sm">
+                    <button id="btn-generar-reporte-grafico" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg shadow transition duration-150 ease-in-out w-full sm:w-auto">
+                        <i class="fas fa-sync-alt mr-2"></i> Generar Gráfico
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="chart-container">
+                    <canvas id="graficoPlatosMasVendidos"></canvas>
+                </div>
+                <p id="mensaje-no-datos-grafico" class="text-gray-500 italic mt-4 text-center" style="display: none;">No hay datos de ventas para el mes seleccionado.</p>
+            </div>
+        </div>
+
+        <div id="gestion-menu-view" class="view admin-only">
+            <h2 class="text-3xl font-semibold mb-6 text-gray-700">Gestión de Menú</h2>
+            <button id="btn-nuevo-menu-item" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow mb-6"><i class="fas fa-plus mr-2"></i>Añadir Nuevo Ítem</button>
+            <div id="menu-items-list-admin" class="space-y-3"></div>
+        </div>
+
+        <div id="gestion-mesas-view" class="view admin-only">
+            <h2 class="text-3xl font-semibold mb-6 text-gray-700">Gestión de Mesas</h2>
+            <div class="mb-6 flex items-center gap-4">
+                <input type="number" id="input-numero-mesa-nueva" placeholder="Número de Mesa" class="p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="input-nombre-mesa-nueva" placeholder="Nombre/Alias (Opcional)" class="p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                <button id="btn-agregar-mesa" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow"><i class="fas fa-plus mr-2"></i>Agregar Mesa</button>
+            </div>
+            <div id="lista-gestion-mesas" class="space-y-3"></div>
+        </div>
+    </main>
 </div>
 
-<div id="pending-orders" class="pending-orders">
-    <h3>Órdenes<br>Pendientes</h3>
-    <ul id="pending-orders-list"></ul>
+<div id="pedido-modal" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-5">
+            <h3 class="text-2xl font-semibold text-indigo-700">Pedido Mesa <span id="modal-mesa-numero-display"></span></h3>
+            <button onclick="app.closePedidoModal()" class="text-gray-500 hover:text-gray-700 text-3xl">&times;</button>
+        </div>
+        <div class="mb-4">
+            <h4 class="text-lg font-medium mb-2 text-gray-600">Menú Disponible</h4>
+            <div id="modal-menu-items-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded-md border"></div>
+        </div>
+        <div>
+            <h4 class="text-lg font-medium mb-2 text-gray-600">Pedido Actual (<span id="modal-pedido-cantidad">0</span> ítems)</h4>
+            <div id="modal-pedido-actual-items" class="mb-3 space-y-2 max-h-40 overflow-y-auto p-2 bg-gray-50 rounded-md border"></div>
+            <p class="text-xl font-semibold text-right mb-4">Total: Bs. <span id="modal-pedido-total">0.00</span></p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="app.limpiarItemsPedidoActual()" class="btn bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg shadow">Limpiar Ítems</button>
+                <button onclick="app.guardarPedido()" class="btn bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow">Guardar Pedido</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="floating-menu" id="floating-menu">Orden</div>
-<div class="floating-pending" id="floating-pending">Pendientes</div>
-<footer>
-    <p>Ubicación: B/ Av.Sudamericana,, Heroes Del Chaco, Santa Cruz de la Sierra</p>
-<!--    <button onclick="window.open('https://wa.me/1234567890', '_blank')">-->
-<!--        <i class="fab fa-whatsapp"></i> Contáctanos-->
-<!--    </button>-->
-    <br><br>
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1129.3559085568081!2d-63.14390077066625!3d-17.806479470160745!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x93f1e9001d01c73f%3A0x3a36dc6b45141a9b!2sLa%20t%C3%ADpica!5e0!3m2!1ses!2sbo!4v1742566747218!5m2!1ses!2sbo" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-</footer>
+<div id="menu-item-modal" class="modal">
+    <div class="modal-content">
+        <h3 id="menu-item-modal-title" class="text-2xl font-semibold text-indigo-700 mb-5">Añadir/Editar Ítem de Menú</h3>
+        <form id="menu-item-form" class="space-y-4">
+            <input type="hidden" id="menu-item-id">
+            <div>
+                <label for="menu-item-nombre" class="block text-sm font-medium text-gray-700">Nombre:</label>
+                <input type="text" id="menu-item-nombre" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label for="menu-item-precio" class="block text-sm font-medium text-gray-700">Precio (Bs.):</label>
+                <input type="number" id="menu-item-precio" step="0.01" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label for="menu-item-categoria" class="block text-sm font-medium text-gray-700">Categoría:</label>
+                <input type="text" id="menu-item-categoria" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label for="menu-item-disponible" class="flex items-center">
+                    <input type="checkbox" id="menu-item-disponible" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                    <span class="ml-2 text-sm text-gray-700">Disponible</span>
+                </label>
+            </div>
+            <div class="flex justify-end space-x-3 pt-3">
+                <button type="button" onclick="app.closeMenuItemModal()" class="btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow">Cancelar</button>
+                <button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow">Guardar Ítem</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
-<script src="funciones.js"></script>
+<script>
+    // MAIN APP OBJECT
+    const app = {
+        // --- STATE ---
+        data: {
+            mesas: [],
+            menuItems: [],
+            pedidos: [],
+            nextPedidoId: 1,
+            nextMesaId: 1,
+            nextMenuItemId: 1,
+            config: {
+                currentUserRole: 'mesero', // 'admin', 'mesero', 'cocina'
+                defaultMesas: 12,
+                initialMenu: [
+                    { id: 1, nombre: "Vaso de refresco", precio: 3, categoria: "Bebidas", disponible: true },
+                    { id: 2, nombre: "Jarra pequeña", precio: 7, categoria: "Bebidas", disponible: true },
+                    { id: 3, nombre: "Jarra grande", precio: 14, categoria: "Bebidas", disponible: true },
+                    { id: 4, nombre: "Soda", precio: 7, categoria: "Bebidas", disponible: true },
+                    { id: 5, nombre: "Tropy fruit", precio: 7, categoria: "Bebidas", disponible: true },
+                    { id: 6, nombre: "Locro de gallina", precio: 13, categoria: "Comidas", disponible: true },
+                    { id: 7, nombre: "Majadito batido", precio: 15, categoria: "Comidas", disponible: true },
+                    { id: 8, nombre: "Majadito tostado", precio: 15, categoria: "Comidas", disponible: true },
+                    { id: 9, nombre: "Picante de lengua", precio: 15, categoria: "Comidas", disponible: true },
+                    { id: 10, nombre:"Picante mixto", precio: 30, categoria: "Comidas", disponible: true },
+                    { id: 11, nombre:"Rapi al jugo", precio: 15, categoria: "Comidas", disponible: true },
+                    { id: 12, nombre:"Picante de gallina", precio: 20, categoria: "Comidas", disponible: true },
+                ]
+            }
+        },
+        currentPedidoEditor: { // Para el modal de tomar/editar pedido
+            mesaId: null,
+            pedidoId: null, // null si es nuevo, valor si es existente
+            items: [], // { menuItemId, nombre, cantidad, precioUnitario }
+            total: 0
+        },
+        graficos: { // Para almacenar instancias de gráficos
+            platosMasVendidos: null
+        },
+        // --- DOM ELEMENTS ---
+        dom: {},
+
+        // --- INITIALIZATION ---
+        init() {
+            this.dom = {
+                roleSelector: document.getElementById('role-selector'),
+                navLinks: document.querySelectorAll('.nav-link'),
+                views: document.querySelectorAll('.view'),
+                // Mesas View
+                mesasContainer: document.getElementById('mesas-container'),
+                // Pedido Modal
+                pedidoModal: document.getElementById('pedido-modal'),
+                modalMesaNumeroDisplay: document.getElementById('modal-mesa-numero-display'),
+                modalMenuItemsContainer: document.getElementById('modal-menu-items-container'),
+                modalPedidoActualItems: document.getElementById('modal-pedido-actual-items'),
+                modalPedidoCantidad: document.getElementById('modal-pedido-cantidad'),
+                modalPedidoTotal: document.getElementById('modal-pedido-total'),
+                // Cocina View
+                cocinaPendientes: document.getElementById('cocina-pendientes'),
+                cocinaPreparacion: document.getElementById('cocina-preparacion'),
+                cocinaEntregados: document.getElementById('cocina-entregados'),
+                // Cobros View
+                ordenesPorCobrarContainer: document.getElementById('ordenes-por-cobrar-container'),
+                noOrdenesPorCobrarMsg: document.getElementById('no-ordenes-por-cobrar'),
+                // Historial Pedidos y Reportes View
+                historialPedidosView: document.getElementById('historial-pedidos-view'),
+                listaHistorialPedidos: document.getElementById('lista-historial-pedidos'),
+                noHistorialPedidosMsg: document.getElementById('no-historial-pedidos'),
+                totalHistoricoVentasDisplay: document.getElementById('total-historico-ventas'),
+                reporteDiarioFechaInput: document.getElementById('reporte-diario-fecha'),
+                btnGenerarReporteDiario: document.getElementById('btn-generar-reporte-diario'),
+                reporteDiarioResultado: document.getElementById('reporte-diario-resultado'),
+                reporteMensualMesInput: document.getElementById('reporte-mensual-mes'),
+                btnGenerarReporteMensual: document.getElementById('btn-generar-reporte-mensual'),
+                reporteMensualResultado: document.getElementById('reporte-mensual-resultado'),
+                // Gestión Menú View
+                btnNuevoMenuItem: document.getElementById('btn-nuevo-menu-item'),
+                menuItemsListAdmin: document.getElementById('menu-items-list-admin'),
+                menuItemModal: document.getElementById('menu-item-modal'),
+                menuItemForm: document.getElementById('menu-item-form'),
+                menuItemIdInput: document.getElementById('menu-item-id'),
+                menuItemNombreInput: document.getElementById('menu-item-nombre'),
+                menuItemPrecioInput: document.getElementById('menu-item-precio'),
+                menuItemCategoriaInput: document.getElementById('menu-item-categoria'),
+                menuItemDisponibleInput: document.getElementById('menu-item-disponible'),
+                menuItemModalTitle: document.getElementById('menu-item-modal-title'),
+                // Gestión Mesas View
+                inputNumeroMesaNueva: document.getElementById('input-numero-mesa-nueva'),
+                inputNombreMesaNueva: document.getElementById('input-nombre-mesa-nueva'),
+                btnAgregarMesa: document.getElementById('btn-agregar-mesa'),
+                listaGestionMesas: document.getElementById('lista-gestion-mesas'),
+                // Reporte Gráfico View
+                reporteGraficoMesInput: document.getElementById('reporte-grafico-mes-input'),
+                btnGenerarReporteGrafico: document.getElementById('btn-generar-reporte-grafico'),
+                canvasGraficoPlatos: document.getElementById('graficoPlatosMasVendidos'),
+                mensajeNoDatosGrafico: document.getElementById('mensaje-no-datos-grafico')
+            };
+
+            this.loadData();
+            this.setupEventListeners();
+            this.navigateToView(this.getDefaultViewForRole(this.data.config.currentUserRole));
+            this.updateRoleUI();
+            this.renderAll();
+
+            // Auto-save on page unload
+            window.addEventListener('beforeunload', () => this.saveData());
+        },
+
+        loadData() {
+            const savedData = localStorage.getItem('restauranteProData');
+            if (savedData) {
+                this.data = JSON.parse(savedData);
+                // Asegurar que las funciones/métodos no se pierdan (si fuera necesario)
+                // Por ahora, la data es simple.
+            } else {
+                // Initialize with defaults if no saved data
+                this.data.config.initialMenu.forEach(item => {
+                    if(!item.id) item.id = this.data.nextMenuItemId++;
+                    this.data.menuItems.push(item);
+                });
+                for (let i = 1; i <= this.data.config.defaultMesas; i++) {
+                    if (!this.data.mesas.find(m => m.numero === i.toString())) {
+                        this.data.mesas.push({
+                            id: this.data.nextMesaId++,
+                            numero: i.toString(),
+                            nombre: `Mesa ${i}`,
+                            estado: 'disponible',
+                            pedidoIdActual: null
+                        });
+                    }
+                }
+            }
+            // Ensure essential structures exist
+            this.data.mesas = this.data.mesas || [];
+            this.data.menuItems = this.data.menuItems || [];
+            this.data.pedidos = this.data.pedidos || [];
+            this.data.nextPedidoId = this.data.nextPedidoId || 1;
+            this.data.nextMesaId = this.data.nextMesaId || (this.data.mesas.length > 0 ? Math.max(...this.data.mesas.map(m => m.id)) + 1 : 1);
+            this.data.nextMenuItemId = this.data.nextMenuItemId || (this.data.menuItems.length > 0 ? Math.max(...this.data.menuItems.map(mi => mi.id)) + 1 : 1);
+            this.data.config = this.data.config || { currentUserRole: 'mesero', defaultMesas: 12, initialMenu: [] };
+
+
+            // Set role from saved config
+            this.dom.roleSelector.value = this.data.config.currentUserRole;
+        },
+
+        saveData() {
+            localStorage.setItem('restauranteProData', JSON.stringify(this.data));
+            console.log("Data saved to LocalStorage.");
+        },
+
+        // --- EVENT LISTENERS ---
+        setupEventListeners() {
+            this.dom.navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.navigateToView(e.target.closest('.nav-link').dataset.view);
+                });
+            });
+
+            this.dom.roleSelector.addEventListener('change', (e) => {
+                this.data.config.currentUserRole = e.target.value;
+                this.updateRoleUI();
+                this.navigateToView(this.getDefaultViewForRole(this.data.config.currentUserRole)); // Navigate to default view for new role
+                this.saveData(); // Save role change
+            });
+
+            // Pedido Modal related (delegated or direct if elements always exist)
+            // Example: this.dom.btnGuardarPedido.addEventListener('click', () => this.guardarPedido());
+
+            // Event listeners para elementos que podrían no existir si el rol no es admin
+            if(this.dom.btnNuevoMenuItem) this.dom.btnNuevoMenuItem.addEventListener('click', () => this.openMenuItemModal());
+            if(this.dom.menuItemForm) this.dom.menuItemForm.addEventListener('submit', (e) => { e.preventDefault(); this.saveMenuItem(); });
+            if(this.dom.btnAgregarMesa) this.dom.btnAgregarMesa.addEventListener('click', () => this.agregarMesa());
+
+            // Event listeners para reportes (estos elementos deberían existir si la vista es accesible)
+            if(this.dom.btnGenerarReporteDiario) this.dom.btnGenerarReporteDiario.addEventListener('click', () => this.generarReporteDiario());
+            if(this.dom.btnGenerarReporteMensual) this.dom.btnGenerarReporteMensual.addEventListener('click', () => this.generarReporteMensual());
+
+            // Gestión Menú
+            this.dom.btnNuevoMenuItem.addEventListener('click', () => this.openMenuItemModal());
+            this.dom.menuItemForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveMenuItem();
+            });
+
+            // Gestión Mesas
+            this.dom.btnAgregarMesa.addEventListener('click', () => this.agregarMesa());
+        },
+        // Nueva función para limpiar vistas
+        cleanupView(viewId) {
+            console.log("Limpiando vista:", viewId);
+            switch(viewId) {
+                case 'reporte-grafico-view':
+                    if (this.graficos.platosMasVendidos) {
+                        this.graficos.platosMasVendidos.destroy();
+                        this.graficos.platosMasVendidos = null;
+                    }
+                    if (this.dom.mensajeNoDatosGrafico) {
+                        this.dom.mensajeNoDatosGrafico.style.display = 'none';
+                        this.dom.mensajeNoDatosGrafico.textContent = 'No hay datos de ventas para el mes seleccionado.';
+                    }
+                    if (this.dom.reporteGraficoMesInput) { // Resetear input de mes
+                        // this.dom.reporteGraficoMesInput.value = ''; // Opcional: o dejar que se ponga el mes actual al entrar
+                    }
+                    break;
+                case 'historial-pedidos-view':
+                    if (this.dom.reporteDiarioResultado) this.dom.reporteDiarioResultado.innerHTML = '<p class="text-gray-500 italic">Seleccione una fecha y genere el reporte.</p>';
+                    if (this.dom.reporteMensualResultado) this.dom.reporteMensualResultado.innerHTML = '<p class="text-gray-500 italic">Seleccione un mes y genere el reporte.</p>';
+                    if (this.dom.listaHistorialPedidos) this.dom.listaHistorialPedidos.innerHTML = '';
+                    if (this.dom.noHistorialPedidosMsg) this.dom.noHistorialPedidosMsg.style.display = 'block';
+                    if (this.dom.totalHistoricoVentasDisplay) this.dom.totalHistoricoVentasDisplay.textContent = 'Bs. 0.00';
+                    if (this.dom.reporteDiarioFechaInput) this.dom.reporteDiarioFechaInput.value = ''; // Resetear input de fecha
+                    if (this.dom.reporteMensualMesInput) this.dom.reporteMensualMesInput.value = ''; // Resetear input de mes
+                    break;
+                case 'cocina-view':
+                    if (this.dom.cocinaPendientes) this.dom.cocinaPendientes.innerHTML = '';
+                    if (this.dom.cocinaPreparacion) this.dom.cocinaPreparacion.innerHTML = '';
+                    if (this.dom.cocinaEntregados) this.dom.cocinaEntregados.innerHTML = '';
+                    break;
+                case 'cobros-view':
+                    if (this.dom.ordenesPorCobrarContainer) this.dom.ordenesPorCobrarContainer.innerHTML = '';
+                    if (this.dom.noOrdenesPorCobrarMsg) this.dom.noOrdenesPorCobrarMsg.style.display = 'block';
+                    break;
+                case 'gestion-menu-view':
+                    if (this.dom.menuItemsListAdmin) this.dom.menuItemsListAdmin.innerHTML = '';
+                    break;
+                case 'gestion-mesas-view':
+                    if (this.dom.listaGestionMesas) this.dom.listaGestionMesas.innerHTML = '';
+                    if (this.dom.inputNumeroMesaNueva) this.dom.inputNumeroMesaNueva.value = ''; // Resetear inputs de nueva mesa
+                    if (this.dom.inputNombreMesaNueva) this.dom.inputNombreMesaNueva.value = '';
+                    break;
+                case 'mesas-view': // Limpiar contenedor de mesas
+                    if (this.dom.mesasContainer) this.dom.mesasContainer.innerHTML = '';
+                    break;
+            }
+        },
+
+        // --- NAVIGATION & UI UPDATES ---
+        navigateToView(viewId) {
+            if (!viewId) {
+                console.warn("navigateToView llamado sin viewId");
+                return;
+            }
+
+            // Cerrar modales activos antes de cambiar de vista
+            if (this.dom.pedidoModal && this.dom.pedidoModal.classList.contains('active')) {
+                this.closePedidoModal();
+            }
+            if (this.dom.menuItemModal && this.dom.menuItemModal.classList.contains('active')) {
+                this.closeMenuItemModal();
+            }
+
+            const currentActiveView = document.querySelector('.view.active');
+            if (currentActiveView && currentActiveView.id !== viewId) {
+                this.cleanupView(currentActiveView.id);
+            }
+
+            this.dom.views.forEach(view => view.classList.remove('active'));
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.add('active');
+            } else {
+                console.error(`Vista con ID '${viewId}' no encontrada.`);
+                return;
+            }
+
+            this.dom.navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.view === viewId) {
+                    link.classList.add('active');
+                }
+            });
+
+            this.renderAll();
+
+            if (viewId === 'reporte-grafico-view' && this.dom.reporteGraficoMesInput && this.dom.reporteGraficoMesInput.value) {
+                // Si el input de mes ya tiene un valor (ej. el actual), generar el gráfico al entrar.
+                // Si no, el usuario deberá seleccionarlo y pulsar el botón.
+                this.generarReporteGraficoPlatos();
+            } else if (viewId === 'reporte-grafico-view' && this.dom.reporteGraficoMesInput && !this.dom.reporteGraficoMesInput.value) {
+                // Si el input está vacío, establecer el mes actual por defecto al entrar a la vista
+                const ahora = new Date();
+                const anio = ahora.getFullYear();
+                const mes = (ahora.getMonth() + 1).toString().padStart(2, '0');
+                this.dom.reporteGraficoMesInput.value = `${anio}-${mes}`;
+                this.generarReporteGraficoPlatos(); // Y generar el gráfico
+            }
+        },
+
+        getDefaultViewForRole(role) {
+            switch (role) {
+                case 'admin': return 'mesas-view'; // Or 'gestion-menu-view'
+                case 'mesero': return 'mesas-view';
+                case 'cocina': return 'cocina-view';
+                default: return 'mesas-view';
+            }
+        },
+
+        updateRoleUI() {
+            const role = this.data.config.currentUserRole;
+            document.body.dataset.role = role; // For potential CSS targeting
+
+            // Show/hide nav links and views based on role
+            // document.querySelectorAll('.admin-only').forEach(el => {
+            //     el.style.display = (role === 'admin') ? (el.tagName === 'A' || el.tagName === 'BUTTON' ? 'block' : 'block') : 'none';
+            // });
+            // document.querySelectorAll('.mesero-only').forEach(el => {
+            //     el.style.display = (role === 'mesero' || role === 'admin') ? (el.tagName === 'A' || el.tagName === 'BUTTON' ? 'block' : 'block') : 'none';
+            // });
+            // document.querySelectorAll('.cocina-only').forEach(el => {
+            //     el.style.display = (role === 'cocina' || role === 'admin') ? (el.tagName === 'A' || el.tagName === 'BUTTON' ? 'block' : 'block') : 'none';
+            // });
+
+            // Restrict access to views if current view is not allowed for new role
+            const activeView = document.querySelector('.view.active');
+            if (activeView) {
+                const viewId = activeView.id;
+                let allowed = true;
+                if (activeView.classList.contains('admin-only') && role !== 'admin') allowed = false;
+                // Add more role checks if needed for other view classes (e.g., 'mesero-only')
+                if (!allowed) {
+                    this.navigateToView(this.getDefaultViewForRole(role));
+                }
+            }
+            this.renderAll();
+        },
+
+        renderAll() {
+            // Call specific render functions based on current view or global elements
+            this.renderMesasView();
+            this.renderCocinaView();
+            this.renderCobrosView();
+            this.renderHistorialPedidosView(); // Nueva función de renderizado
+            if (this.data.config.currentUserRole === 'admin') {
+                this.renderGestionMenuView();
+                this.renderGestionMesasView();
+            }
+        },
+
+        // --- RENDER FUNCTIONS ---
+        renderMesasView() {
+            if (!this.dom.mesasContainer || !document.getElementById('mesas-view').classList.contains('active')) return;
+            this.dom.mesasContainer.innerHTML = '';
+            this.data.mesas.sort((a, b) => parseInt(a.numero) - parseInt(b.numero)).forEach(mesa => {
+                const mesaDiv = document.createElement('div');
+                mesaDiv.className = `mesa p-4 rounded-lg text-center font-semibold cursor-pointer shadow-md hover:shadow-xl flex flex-col items-center justify-center h-28 md:h-32 ${mesa.estado === 'disponible' ? 'disponible' : 'ocupada'}`;
+                mesaDiv.innerHTML = `
+                    <span class="text-xl md:text-2xl">${mesa.nombre || 'Mesa ' + mesa.numero}</span>
+                    <span class="text-xs mt-1 opacity-90">${mesa.estado === 'disponible' ? 'Libre' : 'Ocupada'}</span>
+                `;
+                mesaDiv.onclick = () => this.handleMesaClick(mesa.id);
+                this.dom.mesasContainer.appendChild(mesaDiv);
+            });
+        },
+
+        renderModalMenu() {
+            this.dom.modalMenuItemsContainer.innerHTML = '';
+            const categorias = this.data.menuItems.filter(item => item.disponible).reduce((acc, item) => {
+                acc[item.categoria] = acc[item.categoria] || [];
+                acc[item.categoria].push(item);
+                return acc;
+            }, {});
+
+            for (const categoria in categorias) {
+                const categoriaTitle = document.createElement('h5');
+                categoriaTitle.className = 'text-sm font-semibold text-indigo-600 mt-2 mb-1 col-span-1 md:col-span-2';
+                categoriaTitle.textContent = categoria;
+                this.dom.modalMenuItemsContainer.appendChild(categoriaTitle);
+
+                categorias[categoria].forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'menu-item-card p-2 bg-white rounded shadow flex justify-between items-center text-sm';
+                    itemDiv.innerHTML = `
+                        <div>
+                            <span class="font-medium">${item.nombre}</span>
+                            <span class="text-xs text-gray-500 ml-1">Bs. ${item.precio.toFixed(2)}</span>
+                        </div>
+                        <button onclick="app.addItemToCurrentPedido(${item.id})" class="btn bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-2.5 rounded-full text-xs"><i class="fas fa-plus"></i></button>
+                    `;
+                    this.dom.modalMenuItemsContainer.appendChild(itemDiv);
+                });
+            }
+        },
+
+        renderCurrentPedidoInModal() {
+            this.dom.modalPedidoActualItems.innerHTML = '';
+            if (this.currentPedidoEditor.items.length === 0) {
+                this.dom.modalPedidoActualItems.innerHTML = '<p class="text-gray-500 italic text-xs">Aún no has añadido ítems.</p>';
+            } else {
+                this.currentPedidoEditor.items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'flex justify-between items-center text-sm py-1';
+                    itemDiv.innerHTML = `
+                        <div>
+                            <span>${item.nombre} (x${item.cantidad})</span>
+                            <span class="text-xs text-gray-500 ml-1">@ Bs. ${item.precioUnitario.toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="mr-2 font-medium">Bs. ${(item.precioUnitario * item.cantidad).toFixed(2)}</span>
+                            <button onclick="app.removeItemFromCurrentPedido(${item.menuItemId})" class="text-red-500 hover:text-red-700 font-bold text-xs py-0.5 px-1.5 rounded-full border border-red-500 hover:bg-red-100"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    `;
+                    this.dom.modalPedidoActualItems.appendChild(itemDiv);
+                });
+            }
+            this.dom.modalPedidoTotal.textContent = this.currentPedidoEditor.total.toFixed(2);
+            this.dom.modalPedidoCantidad.textContent = this.currentPedidoEditor.items.reduce((sum, item) => sum + item.cantidad, 0);
+        },
+
+        renderCocinaView() {
+            if (!document.getElementById('cocina-view').classList.contains('active')) return;
+            this.dom.cocinaPendientes.innerHTML = '';
+            this.dom.cocinaPreparacion.innerHTML = '';
+            this.dom.cocinaEntregados.innerHTML = '';
+
+            const pedidosActivos = this.data.pedidos.filter(p => p.estadoCocina !== 'entregado_y_servido'); // O alguna condición para no mostrar los ya muy viejos
+
+            pedidosActivos.forEach(pedido => {
+                const mesa = this.data.mesas.find(m => m.id === pedido.mesaId);
+                const pedidoCard = document.createElement('div');
+                pedidoCard.className = 'bg-gray-100 p-3 rounded-md shadow text-sm';
+                let itemsHtml = pedido.items.map(item => `<li>${item.nombre} (x${item.cantidad})</li>`).join('');
+
+                pedidoCard.innerHTML = `
+                    <h5 class="font-semibold">Pedido #${pedido.id} (Mesa ${mesa ? (mesa.nombre || mesa.numero) : 'N/A'})</h5>
+                    <ul class="list-disc list-inside my-1 text-xs text-gray-700">${itemsHtml}</ul>
+                    ${pedido.nota ? `<p class="text-xs italic text-blue-600 mt-1">Nota: ${pedido.nota}</p>` : ''}
+                `;
+
+                if (pedido.estadoCocina === 'pendiente') {
+                    const btnIniciar = document.createElement('button');
+                    btnIniciar.className = 'btn bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-2 rounded text-xs mt-2 w-full';
+                    btnIniciar.innerHTML = '<i class="fas fa-play mr-1"></i> Iniciar Preparación';
+                    btnIniciar.onclick = () => this.actualizarEstadoCocina(pedido.id, 'preparacion');
+                    pedidoCard.appendChild(btnIniciar);
+                    this.dom.cocinaPendientes.appendChild(pedidoCard);
+                } else if (pedido.estadoCocina === 'preparacion') {
+                    const btnFinalizar = document.createElement('button');
+                    btnFinalizar.className = 'btn bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-2 rounded text-xs mt-2 w-full';
+                    btnFinalizar.innerHTML = '<i class="fas fa-check mr-1"></i> Listo para Servir';
+                    btnFinalizar.onclick = () => this.actualizarEstadoCocina(pedido.id, 'listo_para_servir');
+                    pedidoCard.appendChild(btnFinalizar);
+                    this.dom.cocinaPreparacion.appendChild(pedidoCard);
+                } else if (pedido.estadoCocina === 'listo_para_servir') {
+                    const estadoTexto = document.createElement('p');
+                    estadoTexto.className = 'text-green-600 font-semibold text-xs mt-2';
+                    estadoTexto.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Listo para Servir';
+                    pedidoCard.appendChild(estadoTexto);
+                    this.dom.cocinaEntregados.appendChild(pedidoCard);
+                }
+            });
+            // Mensajes si no hay pedidos
+            if(this.dom.cocinaPendientes.children.length === 0) this.dom.cocinaPendientes.innerHTML = '<p class="text-gray-400 italic text-xs">No hay pedidos pendientes.</p>';
+            if(this.dom.cocinaPreparacion.children.length === 0) this.dom.cocinaPreparacion.innerHTML = '<p class="text-gray-400 italic text-xs">No hay pedidos en preparación.</p>';
+            if(this.dom.cocinaEntregados.children.length === 0) this.dom.cocinaEntregados.innerHTML = '<p class="text-gray-400 italic text-xs">No hay pedidos listos.</p>';
+        },
+
+        renderCobrosView() {
+            if (!this.dom.ordenesPorCobrarContainer || !document.getElementById('cobros-view').classList.contains('active')) return;
+            this.dom.ordenesPorCobrarContainer.innerHTML = '';
+
+            const pedidosParaCobro = this.data.pedidos.filter(p => p.estadoCobro === 'pendiente_cobro' && p.estadoCocina === 'listo_para_servir');
+
+            if (pedidosParaCobro.length === 0) {
+                this.dom.noOrdenesPorCobrarMsg.style.display = 'block';
+                return;
+            }
+            this.dom.noOrdenesPorCobrarMsg.style.display = 'none';
+
+            pedidosParaCobro.forEach(pedido => {
+                const mesa = this.data.mesas.find(m => m.id === pedido.mesaId);
+                const pedidoDiv = document.createElement('div');
+                pedidoDiv.className = 'p-4 bg-gray-50 rounded-lg shadow-md';
+                let itemsHtml = pedido.items.map(item =>
+                    `<li class="text-sm text-gray-600">${item.nombre} (x${item.cantidad}) - Bs. ${(item.precioUnitario * item.cantidad).toFixed(2)}</li>`
+                ).join('');
+
+                pedidoDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-semibold text-lg text-indigo-700">Pedido #${pedido.id} - Mesa ${mesa ? (mesa.nombre || mesa.numero) : 'N/A'}</h4>
+                            <span class="badge badge-red">Pendiente de Cobro</span>
+                        </div>
+                        <button onclick="app.finalizarCobro(${pedido.id})" class="btn bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow text-sm"><i class="fas fa-dollar-sign mr-1"></i>Finalizar Cobro</button>
+                    </div>
+                    <ul class="list-disc list-inside my-2 ml-4">${itemsHtml}</ul>
+                    ${pedido.nota ? `<p class="text-xs italic text-blue-600 my-1">Nota: ${pedido.nota}</p>` : ''}
+                    <p class="text-right font-bold text-xl text-gray-800 mt-2">Total: Bs. ${pedido.total.toFixed(2)}</p>
+                `;
+                this.dom.ordenesPorCobrarContainer.appendChild(pedidoDiv);
+            });
+        },
+
+        renderHistorialPedidosView() {
+            // Asegurarse que la vista de historial y sus elementos existan y la vista esté activa
+            if (!this.dom.historialPedidosView || !this.dom.historialPedidosView.classList.contains('active')) return;
+
+            this.dom.listaHistorialPedidos.innerHTML = ''; // Limpiar lista general
+            const pedidosCobrados = this.data.pedidos.filter(p => p.estadoCobro === 'cobrado');
+            let totalHistorico = 0;
+
+            if (pedidosCobrados.length === 0) {
+                if(this.dom.noHistorialPedidosMsg) this.dom.noHistorialPedidosMsg.style.display = 'block';
+            } else {
+                if(this.dom.noHistorialPedidosMsg) this.dom.noHistorialPedidosMsg.style.display = 'none';
+                pedidosCobrados.sort((a,b) => new Date(b.fechaCobro) - new Date(a.fechaCobro)); // Más recientes primero
+
+                pedidosCobrados.forEach(pedido => {
+                    totalHistorico += pedido.total;
+                    const mesa = this.data.mesas.find(m => m.id === pedido.mesaId);
+                    const pedidoDiv = document.createElement('div');
+                    pedidoDiv.className = 'p-4 bg-white rounded-lg shadow-md';
+                    let itemsHtml = pedido.items.map(item =>
+                        `<li class="text-sm text-gray-600">${item.nombre} (x${item.cantidad}) - Bs. ${(item.precioUnitario * item.cantidad).toFixed(2)}</li>`
+                    ).join('');
+                    // Formatear fecha de cobro
+                    const fechaCobroFormateada = pedido.fechaCobro ? new Date(pedido.fechaCobro).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+
+                    pedidoDiv.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-semibold text-md text-gray-800">Pedido #${pedido.id} - Mesa ${mesa ? (mesa.nombre || mesa.numero) : 'N/A'}</h4>
+                                <span class="badge badge-gray">Cobrado: ${fechaCobroFormateada}</span>
+                            </div>
+                            <span class="font-bold text-lg text-green-700">Bs. ${pedido.total.toFixed(2)}</span>
+                        </div>
+                        <ul class="list-disc list-inside my-2 ml-4 text-xs">${itemsHtml}</ul>
+                        ${pedido.nota ? `<p class="text-xs italic text-blue-600 my-1">Nota: ${pedido.nota}</p>` : ''}
+                    `;
+                    this.dom.listaHistorialPedidos.appendChild(pedidoDiv);
+                });
+            }
+            if(this.dom.totalHistoricoVentasDisplay) this.dom.totalHistoricoVentasDisplay.textContent = `Bs. ${totalHistorico.toFixed(2)}`;
+
+            // Resetear las secciones de resultado de reportes al renderizar la vista general
+            if(this.dom.reporteDiarioResultado) this.dom.reporteDiarioResultado.innerHTML = '<p class="text-gray-500 italic">Seleccione una fecha y genere el reporte.</p>';
+            if(this.dom.reporteMensualResultado) this.dom.reporteMensualResultado.innerHTML = '<p class="text-gray-500 italic">Seleccione un mes y genere el reporte.</p>';
+        },
+
+        renderGestionMenuView() {
+            if (!this.dom.menuItemsListAdmin || !document.getElementById('gestion-menu-view').classList.contains('active')) return;
+            this.dom.menuItemsListAdmin.innerHTML = '';
+            if (this.data.menuItems.length === 0) {
+                this.dom.menuItemsListAdmin.innerHTML = '<p class="text-gray-500 italic">No hay ítems en el menú. Agrega algunos.</p>';
+                return;
+            }
+
+            this.data.menuItems.sort((a,b) => a.nombre.localeCompare(b.nombre)).forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'p-3 bg-white rounded-lg shadow flex justify-between items-center';
+                itemDiv.innerHTML = `
+                    <div>
+                        <span class="font-semibold text-md">${item.nombre}</span>
+                        <span class="text-sm text-gray-600 ml-2">(Bs. ${item.precio.toFixed(2)}) - Cat: ${item.categoria}</span>
+                        <span class="ml-2 text-xs font-medium ${item.disponible ? 'text-green-600' : 'text-red-600'}">${item.disponible ? 'Disponible' : 'No Disponible'}</span>
+                    </div>
+                    <div class="space-x-2">
+                        <button onclick="app.openMenuItemModal(${item.id})" class="btn bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm"><i class="fas fa-edit"></i></button>
+                        <button onclick="app.deleteMenuItem(${item.id})" class="btn bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-sm"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                this.dom.menuItemsListAdmin.appendChild(itemDiv);
+            });
+        },
+
+        renderGestionMesasView() {
+            if (!this.dom.listaGestionMesas || !document.getElementById('gestion-mesas-view').classList.contains('active')) return;
+            this.dom.listaGestionMesas.innerHTML = '';
+            if (this.data.mesas.length === 0) {
+                this.dom.listaGestionMesas.innerHTML = '<p class="text-gray-500 italic">No hay mesas configuradas.</p>';
+                return;
+            }
+            this.data.mesas.sort((a, b) => parseInt(a.numero) - parseInt(b.numero)).forEach(mesa => {
+                const mesaDiv = document.createElement('div');
+                mesaDiv.className = 'p-3 bg-white rounded-lg shadow flex justify-between items-center';
+                mesaDiv.innerHTML = `
+                    <div>
+                        <span class="font-semibold text-md">${mesa.nombre || 'Mesa ' + mesa.numero} (Nº ${mesa.numero})</span>
+                        <span class="text-sm text-gray-500 ml-2">- ID: ${mesa.id}</span>
+                    </div>
+                    <button onclick="app.eliminarMesa(${mesa.id})" class="btn bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-sm" ${mesa.estado === 'ocupada' ? 'disabled title="No se puede eliminar una mesa ocupada"' : ''}><i class="fas fa-trash"></i></button>
+                `;
+                if (mesa.estado === 'ocupada') {
+                    mesaDiv.querySelector('button').classList.add('opacity-50', 'cursor-not-allowed');
+                }
+                this.dom.listaGestionMesas.appendChild(mesaDiv);
+            });
+        },
+
+        // Helper function para mostrar resultados de reportes
+        _displayReportResults(containerElement, pedidosFiltrados, tipoReporte) {
+            containerElement.innerHTML = ''; // Limpiar contenedor
+            let totalReporte = 0;
+            if (pedidosFiltrados.length === 0) {
+                containerElement.innerHTML = `<p class="text-gray-500 italic">No hay ventas para ${tipoReporte}.</p>`;
+                return;
+            }
+
+            const listaUl = document.createElement('ul');
+            listaUl.className = 'space-y-3';
+
+            pedidosFiltrados.forEach(pedido => {
+                totalReporte += pedido.total;
+                const mesa = this.data.mesas.find(m => m.id === pedido.mesaId);
+                const itemLi = document.createElement('li');
+                itemLi.className = 'p-3 bg-gray-50 rounded-md text-sm';
+                const fechaCobroFormateada = pedido.fechaCobro ? new Date(pedido.fechaCobro).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+                let itemsDetailHtml = pedido.items.map(it => `${it.nombre} (x${it.cantidad})`).join(', ');
+
+                itemLi.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">Pedido #${pedido.id} (Mesa ${mesa ? (mesa.nombre || mesa.numero) : 'N/A'})</span>
+                        <span class="font-semibold text-green-600">Bs. ${pedido.total.toFixed(2)}</span>
+                    </div>
+                    <div class="text-xs text-gray-500">Cobrado: ${fechaCobroFormateada}</div>
+                    <div class="text-xs text-gray-600 mt-1">Ítems: ${itemsDetailHtml}</div>
+                    ${pedido.nota ? `<div class="text-xs italic text-blue-500 mt-0.5">Nota: ${pedido.nota}</div>` : ''}
+                `;
+                listaUl.appendChild(itemLi);
+            });
+            containerElement.appendChild(listaUl);
+
+            const totalP = document.createElement('p');
+            totalP.className = 'text-right font-bold text-lg mt-4 pt-2 border-t';
+            totalP.textContent = `Total ${tipoReporte}: Bs. ${totalReporte.toFixed(2)}`;
+            containerElement.appendChild(totalP);
+        },
+
+        generarReporteDiario() {
+            const fechaSeleccionada = this.dom.reporteDiarioFechaInput.value; // Formato YYYY-MM-DD
+            if (!fechaSeleccionada) {
+                alert("Por favor, seleccione una fecha para el reporte diario.");
+                this.dom.reporteDiarioResultado.innerHTML = '<p class="text-red-500 italic">Por favor, seleccione una fecha.</p>';
+                return;
+            }
+
+            const pedidosDelDia = this.data.pedidos.filter(p =>
+                p.estadoCobro === 'cobrado' &&
+                p.fechaCobro &&
+                p.fechaCobro.startsWith(fechaSeleccionada) // Compara YYYY-MM-DD
+            );
+            // Formatear la fecha seleccionada para mostrarla de forma amigable
+            const fechaFormateadaParaTitulo = new Date(fechaSeleccionada+'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+            this._displayReportResults(this.dom.reporteDiarioResultado, pedidosDelDia, `del ${fechaFormateadaParaTitulo}`);
+        },
+
+        generarReporteMensual() {
+            const mesSeleccionado = this.dom.reporteMensualMesInput.value; // Formato YYYY-MM
+            if (!mesSeleccionado) {
+                alert("Por favor, seleccione un mes para el reporte mensual.");
+                this.dom.reporteMensualResultado.innerHTML = '<p class="text-red-500 italic">Por favor, seleccione un mes.</p>';
+                return;
+            }
+
+            const [year, month] = mesSeleccionado.split('-');
+            const pedidosDelMes = this.data.pedidos.filter(p => {
+                if (p.estadoCobro === 'cobrado' && p.fechaCobro) {
+                    const fechaCobroObj = new Date(p.fechaCobro);
+                    // Compara año y mes (getMonth() es 0-indexado)
+                    return fechaCobroObj.getFullYear() === parseInt(year) && (fechaCobroObj.getMonth() + 1) === parseInt(month);
+                }
+                return false;
+            });
+            // Formatear el mes/año para mostrarlo de forma amigable
+            const nombreMes = new Date(parseInt(year), parseInt(month)-1, 1).toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+            this._displayReportResults(this.dom.reporteMensualResultado, pedidosDelMes, `de ${nombreMes}`);
+        },
+
+        // --- NUEVA FUNCIÓN PARA REPORTE GRÁFICO ---
+        generarReporteGraficoPlatos() {
+            if (!this.dom.reporteGraficoMesInput || !this.dom.canvasGraficoPlatos || !this.dom.mensajeNoDatosGrafico) return;
+
+            const mesSeleccionado = this.dom.reporteGraficoMesInput.value; // Formato "YYYY-MM"
+            if (!mesSeleccionado) {
+                // Usar un modal o un mensaje en la UI en lugar de alert
+                this.dom.mensajeNoDatosGrafico.textContent = "Por favor, seleccione un mes.";
+                this.dom.mensajeNoDatosGrafico.style.display = 'block';
+                if (this.graficos.platosMasVendidos) {
+                    this.graficos.platosMasVendidos.destroy();
+                    this.graficos.platosMasVendidos = null;
+                }
+                this.dom.canvasGraficoPlatos.style.display = 'none';
+                return;
+            }
+
+            const [anioSeleccionado, mesNumSeleccionado] = mesSeleccionado.split('-').map(Number);
+
+            const platosVendidos = {};
+            this.data.pedidos.forEach(pedido => {
+                if (pedido.estadoCobro === 'cobrado' && pedido.fechaCobro) {
+                    const fechaCobro = new Date(pedido.fechaCobro);
+                    if (fechaCobro.getFullYear() === anioSeleccionado && (fechaCobro.getMonth() + 1) === mesNumSeleccionado) {
+                        pedido.items.forEach(item => {
+                            platosVendidos[item.menuItemId] = (platosVendidos[item.menuItemId] || 0) + item.cantidad;
+                        });
+                    }
+                }
+            });
+
+            const datosGrafico = [];
+            for (const menuItemId in platosVendidos) {
+                const menuItem = this.data.menuItems.find(mi => mi.id === parseInt(menuItemId));
+                if (menuItem) {
+                    datosGrafico.push({
+                        nombre: menuItem.nombre,
+                        cantidad: platosVendidos[menuItemId]
+                    });
+                }
+            }
+
+            // Ordenar por cantidad descendente y tomar los primeros N (ej. 10)
+            datosGrafico.sort((a, b) => b.cantidad - a.cantidad);
+            const topPlatos = datosGrafico.slice(0, 10);
+
+            if (topPlatos.length === 0) {
+                this.dom.mensajeNoDatosGrafico.textContent = "No hay datos de ventas para el mes seleccionado.";
+                this.dom.mensajeNoDatosGrafico.style.display = 'block';
+                this.dom.canvasGraficoPlatos.style.display = 'none';
+                if (this.graficos.platosMasVendidos) {
+                    this.graficos.platosMasVendidos.destroy();
+                    this.graficos.platosMasVendidos = null;
+                }
+                return;
+            }
+
+            this.dom.mensajeNoDatosGrafico.style.display = 'none';
+            this.dom.canvasGraficoPlatos.style.display = 'block';
+
+
+            const labels = topPlatos.map(p => p.nombre);
+            const dataValues = topPlatos.map(p => p.cantidad);
+
+            if (this.graficos.platosMasVendidos) {
+                this.graficos.platosMasVendidos.destroy(); // Destruir gráfico anterior
+            }
+
+            const ctx = this.dom.canvasGraficoPlatos.getContext('2d');
+            this.graficos.platosMasVendidos = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cantidad Vendida',
+                        data: dataValues,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(255, 159, 64, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(201, 203, 207, 0.7)',
+                            'rgba(255, 99, 71, 0.7)', // Tomato
+                            'rgba(60, 179, 113, 0.7)', // MediumSeaGreen
+                            'rgba(106, 90, 205, 0.7)' // SlateBlue
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(201, 203, 207, 1)',
+                            'rgba(255, 99, 71, 1)',
+                            'rgba(60, 179, 113, 1)',
+                            'rgba(106, 90, 205, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1 // Para asegurar números enteros en el eje Y si las cantidades son pequeñas
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: `Platos más vendidos en ${this.formatearMesAnio(mesSeleccionado)}`
+                        }
+                    }
+                }
+            });
+        },
+
+        formatearMesAnio(valorMesInput) { // YYYY-MM
+            if (!valorMesInput) return "";
+            const [anio, mes] = valorMesInput.split('-');
+            const fecha = new Date(anio, mes - 1, 1); // Mes es 0-indexado
+            return fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+        },
+
+        // --- PEDIDO LOGIC ---
+        handleMesaClick(mesaId) {
+            const mesa = this.data.mesas.find(m => m.id === mesaId);
+            if (!mesa) return;
+
+            this.dom.modalMesaNumeroDisplay.textContent = `${mesa.nombre || 'Mesa ' + mesa.numero}`;
+            this.renderModalMenu();
+
+            if (mesa.estado === 'disponible') {
+                // Nueva orden
+                this.currentPedidoEditor = {
+                    mesaId: mesaId,
+                    pedidoId: null,
+                    items: [],
+                    total: 0,
+                    nota: ''
+                };
+            } else {
+                // Editar orden existente
+                const pedidoExistente = this.data.pedidos.find(p => p.id === mesa.pedidoIdActual && p.estadoCobro === 'pendiente_cobro');
+                if (pedidoExistente) {
+                    this.currentPedidoEditor = {
+                        mesaId: mesaId,
+                        pedidoId: pedidoExistente.id,
+                        items: JSON.parse(JSON.stringify(pedidoExistente.items)), // Deep copy
+                        total: pedidoExistente.total,
+                        nota: pedidoExistente.nota || ''
+                    };
+                } else {
+                    // Caso raro: mesa ocupada pero sin pedido editable. Crear uno nuevo.
+                    console.warn(`Mesa ${mesaId} ocupada pero sin pedido editable. Creando uno nuevo.`);
+                    this.currentPedidoEditor = {
+                        mesaId: mesaId,
+                        pedidoId: null,// Nueva función para limpiar vistas
+                        cleanupView(viewId) {
+                            console.log("Limpiando vista:", viewId);
+                            switch(viewId) {
+                                case 'reporte-grafico-view':
+                                    if (this.graficos.platosMasVendidos) {
+                                        this.graficos.platosMasVendidos.destroy();
+                                        this.graficos.platosMasVendidos = null;
+                                    }
+                                    if (this.dom.mensajeNoDatosGrafico) {
+                                        this.dom.mensajeNoDatosGrafico.style.display = 'none'; // Ocultar mensaje
+                                        this.dom.mensajeNoDatosGrafico.textContent = 'No hay datos de ventas para el mes seleccionado.'; // Resetear texto
+                                    }
+                                    // El canvas se limpia al destruir el chart.
+                                    break;
+                                case 'historial-pedidos-view':
+                                    if (this.dom.reporteDiarioResultado) this.dom.reporteDiarioResultado.innerHTML = '<p class="text-gray-500 italic">Seleccione una fecha y genere el reporte.</p>';
+                                    if (this.dom.reporteMensualResultado) this.dom.reporteMensualResultado.innerHTML = '<p class="text-gray-500 italic">Seleccione un mes y genere el reporte.</p>';
+                                    if (this.dom.listaHistorialPedidos) this.dom.listaHistorialPedidos.innerHTML = ''; // Limpiar lista
+                                    if (this.dom.noHistorialPedidosMsg) this.dom.noHistorialPedidosMsg.style.display = 'block'; // Mostrar mensaje por defecto
+                                    if (this.dom.totalHistoricoVentasDisplay) this.dom.totalHistoricoVentasDisplay.textContent = 'Bs. 0.00';
+                                    break;
+                                case 'cocina-view':
+                                    if (this.dom.cocinaPendientes) this.dom.cocinaPendientes.innerHTML = '';
+                                    if (this.dom.cocinaPreparacion) this.dom.cocinaPreparacion.innerHTML = '';
+                                    if (this.dom.cocinaEntregados) this.dom.cocinaEntregados.innerHTML = '';
+                                    break;
+                                case 'cobros-view':
+                                    if (this.dom.ordenesPorCobrarContainer) this.dom.ordenesPorCobrarContainer.innerHTML = '';
+                                    if (this.dom.noOrdenesPorCobrarMsg) this.dom.noOrdenesPorCobrarMsg.style.display = 'block';
+                                    break;
+                                case 'gestion-menu-view':
+                                    if (this.dom.menuItemsListAdmin) this.dom.menuItemsListAdmin.innerHTML = '';
+                                    break;
+                                case 'gestion-mesas-view':
+                                    if (this.dom.listaGestionMesas) this.dom.listaGestionMesas.innerHTML = '';
+                                    break;
+                            }
+                        },
+
+                        items: [],
+                        total: 0,
+                        nota: ''
+                    };
+                }
+            }
+            this.renderCurrentPedidoInModal();
+            this.dom.pedidoModal.classList.add('active');
+        },
+
+        closePedidoModal() {
+            this.dom.pedidoModal.classList.remove('active');
+            this.currentPedidoEditor = { mesaId: null, pedidoId: null, items: [], total: 0, nota: '' }; // Reset
+        },
+
+        addItemToCurrentPedido(menuItemId) {
+            const menuItem = this.data.menuItems.find(item => item.id === menuItemId);
+            if (!menuItem || !menuItem.disponible) {
+                alert("Ítem no disponible.");
+                return;
+            }
+
+            let itemEnPedido = this.currentPedidoEditor.items.find(item => item.menuItemId === menuItemId);
+            if (itemEnPedido) {
+                itemEnPedido.cantidad++;
+            } else {
+                this.currentPedidoEditor.items.push({
+                    menuItemId: menuItem.id,
+                    nombre: menuItem.nombre,
+                    cantidad: 1,
+                    precioUnitario: menuItem.precio
+                });
+            }
+            this.recalculateCurrentPedidoTotal();
+            this.renderCurrentPedidoInModal();
+        },
+
+        removeItemFromCurrentPedido(menuItemId) {
+            const itemIndex = this.currentPedidoEditor.items.findIndex(item => item.menuItemId === menuItemId);
+            if (itemIndex > -1) {
+                const itemEnPedido = this.currentPedidoEditor.items[itemIndex];
+                itemEnPedido.cantidad--;
+                if (itemEnPedido.cantidad === 0) {
+                    this.currentPedidoEditor.items.splice(itemIndex, 1);
+                }
+                this.recalculateCurrentPedidoTotal();
+                this.renderCurrentPedidoInModal();
+            }
+        },
+
+        limpiarItemsPedidoActual() {
+            this.currentPedidoEditor.items = [];
+            this.recalculateCurrentPedidoTotal();
+            this.renderCurrentPedidoInModal();
+        },
+
+        recalculateCurrentPedidoTotal() {
+            this.currentPedidoEditor.total = this.currentPedidoEditor.items.reduce((sum, item) => sum + (item.precioUnitario * item.cantidad), 0);
+        },
+
+        guardarPedido() {
+            if (this.currentPedidoEditor.items.length === 0) {
+                alert("El pedido está vacío.");
+                return;
+            }
+            const { mesaId, pedidoId, items, total, nota } = this.currentPedidoEditor;
+            const timestamp = new Date().toISOString();
+
+            if (pedidoId) { // Editando pedido existente
+                const pedidoIndex = this.data.pedidos.findIndex(p => p.id === pedidoId);
+                if (pedidoIndex > -1) {
+                    this.data.pedidos[pedidoIndex] = {
+                        ...this.data.pedidos[pedidoIndex],
+                        items: JSON.parse(JSON.stringify(items)), // Deep copy
+                        total: total,
+                        nota: nota,
+                        fechaActualizacion: timestamp
+                    };
+                    console.log(`Pedido #${pedidoId} actualizado.`);
+                }
+            } else { // Nuevo pedido
+                const nuevoPedido = {
+                    id: this.data.nextPedidoId++,
+                    mesaId: mesaId,
+                    items: JSON.parse(JSON.stringify(items)), // Deep copy
+                    total: total,
+                    nota: nota,
+                    estadoCobro: 'pendiente_cobro',
+                    estadoCocina: 'pendiente', // Nuevo estado para cocina
+                    fechaCreacion: timestamp,
+                    fechaActualizacion: timestamp
+                };
+                this.data.pedidos.push(nuevoPedido);
+                // Marcar mesa como ocupada y asignar ID de pedido
+                const mesa = this.data.mesas.find(m => m.id === mesaId);
+                if (mesa) {
+                    mesa.estado = 'ocupada';
+                    mesa.pedidoIdActual = nuevoPedido.id;
+                }
+                console.log(`Nuevo pedido #${nuevoPedido.id} creado para mesa ${mesaId}.`);
+            }
+
+            this.saveData();
+            this.closePedidoModal();
+            this.renderAll(); // Actualiza todas las vistas relevantes
+        },
+
+        actualizarEstadoCocina(pedidoId, nuevoEstado) {
+            const pedido = this.data.pedidos.find(p => p.id === pedidoId);
+            if (pedido) {
+                pedido.estadoCocina = nuevoEstado;
+                pedido.fechaActualizacion = new Date().toISOString();
+                this.saveData();
+                this.renderCocinaView();
+                if (nuevoEstado === 'listo_para_servir') this.renderCobrosView(); // Si está listo, podría aparecer en cobros.
+                console.log(`Pedido #${pedidoId} actualizado a estado de cocina: ${nuevoEstado}`);
+            }
+        },
+
+        finalizarCobro(pedidoId) {
+            const pedido = this.data.pedidos.find(p => p.id === pedidoId);
+            if (pedido) {
+                pedido.estadoCobro = 'cobrado';
+                pedido.fechaActualizacion = new Date().toISOString();
+                pedido.estadoCocina = 'entregado_y_servido'
+
+                const mesa = this.data.mesas.find(m => m.id === pedido.mesaId);
+                if (mesa && mesa.pedidoIdActual === pedido.id) {
+                    mesa.estado = 'disponible';
+                    mesa.pedidoIdActual = null;
+                } else if (mesa) {
+                    console.warn(`Mesa ${mesa.id} ya no tenía el pedido ${pedido.id} como actual o ya estaba libre.`);
+                }
+
+                this.saveData();
+                this.renderMesasView();
+                this.renderCobrosView();
+                this.renderCocinaView(); // Para que desaparezca de "Listos para servir"
+                this.renderHistorialPedidosView(); // Para que aparezca en el historial
+                console.log(`Pedido #${pedidoId} cobrado y mesa ${mesa ? mesa.id : 'N/A'} liberada.`);
+            }
+        },
+
+        // --- GESTIÓN DE MENÚ ---
+        openMenuItemModal(itemId = null) {
+            this.dom.menuItemForm.reset();
+            this.dom.menuItemIdInput.value = '';
+            this.dom.menuItemDisponibleInput.checked = true; // Default a disponible
+
+            if (itemId) {
+                const item = this.data.menuItems.find(i => i.id === itemId);
+                if (item) {
+                    this.dom.menuItemModalTitle.textContent = "Editar Ítem de Menú";
+                    this.dom.menuItemIdInput.value = item.id;
+                    this.dom.menuItemNombreInput.value = item.nombre;
+                    this.dom.menuItemPrecioInput.value = item.precio;
+                    this.dom.menuItemCategoriaInput.value = item.categoria;
+                    this.dom.menuItemDisponibleInput.checked = item.disponible;
+                }
+            } else {
+                this.dom.menuItemModalTitle.textContent = "Añadir Nuevo Ítem de Menú";
+            }
+            this.dom.menuItemModal.classList.add('active');
+        },
+
+        closeMenuItemModal() {
+            this.dom.menuItemModal.classList.remove('active');
+        },
+
+        saveMenuItem() {
+            const id = parseInt(this.dom.menuItemIdInput.value);
+            const nombre = this.dom.menuItemNombreInput.value.trim();
+            const precio = parseFloat(this.dom.menuItemPrecioInput.value);
+            const categoria = this.dom.menuItemCategoriaInput.value.trim();
+            const disponible = this.dom.menuItemDisponibleInput.checked;
+
+            if (!nombre || isNaN(precio) || precio <= 0 || !categoria) {
+                alert("Por favor, completa todos los campos correctamente.");
+                return;
+            }
+
+            if (id) { // Editar
+                const itemIndex = this.data.menuItems.findIndex(i => i.id === id);
+                if (itemIndex > -1) {
+                    this.data.menuItems[itemIndex] = { id, nombre, precio, categoria, disponible };
+                }
+            } else { // Nuevo
+                this.data.menuItems.push({
+                    id: this.data.nextMenuItemId++,
+                    nombre,
+                    precio,
+                    categoria,
+                    disponible
+                });
+            }
+            this.saveData();
+            this.renderGestionMenuView();
+            this.closeMenuItemModal();
+        },
+
+        deleteMenuItem(itemId) {
+            if (confirm("¿Estás seguro de que quieres eliminar este ítem del menú?")) {
+                // Check si el item está en algún pedido activo
+                const enPedidoActivo = this.data.pedidos.some(pedido =>
+                    pedido.estadoCobro === 'pendiente_cobro' &&
+                    pedido.items.some(item => item.menuItemId === itemId)
+                );
+
+                if (enPedidoActivo) {
+                    alert("No se puede eliminar este ítem porque está incluido en pedidos activos. Puedes marcarlo como 'No Disponible'.");
+                    return;
+                }
+
+                this.data.menuItems = this.data.menuItems.filter(item => item.id !== itemId);
+                this.saveData();
+                this.renderGestionMenuView();
+            }
+        },
+
+        // --- GESTIÓN DE MESAS ---
+        agregarMesa() {
+            const numero = this.dom.inputNumeroMesaNueva.value.trim();
+            let nombre = this.dom.inputNombreMesaNueva.value.trim();
+
+            if (!numero || isNaN(parseInt(numero))) {
+                alert("Por favor, ingresa un número de mesa válido.");
+                return;
+            }
+            if (this.data.mesas.some(m => m.numero === numero)) {
+                alert("Ya existe una mesa con ese número.");
+                return;
+            }
+            if (!nombre) {
+                nombre = `Mesa ${numero}`; // Nombre por defecto
+            }
+
+
+            this.data.mesas.push({
+                id: this.data.nextMesaId++,
+                numero: numero,
+                nombre: nombre,
+                estado: 'disponible',
+                pedidoIdActual: null
+            });
+            this.dom.inputNumeroMesaNueva.value = '';
+            this.dom.inputNombreMesaNueva.value = '';
+            this.saveData();
+            this.renderGestionMesasView();
+            this.renderMesasView(); // También actualizar la vista de mesas general
+        },
+
+        eliminarMesa(mesaId) {
+            const mesa = this.data.mesas.find(m => m.id === mesaId);
+            if (mesa && mesa.estado === 'ocupada') {
+                alert("No se puede eliminar una mesa que está ocupada.");
+                return;
+            }
+            if (confirm(`¿Estás seguro de que quieres eliminar la mesa ${mesa ? (mesa.nombre || mesa.numero) : mesaId}?`)) {
+                this.data.mesas = this.data.mesas.filter(m => m.id !== mesaId);
+                this.saveData();
+                this.renderGestionMesasView();
+                this.renderMesasView();
+            }
+        },
+
+    }; // END OF APP OBJECT
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', () => app.init());
+
+</script>
 </body>
 </html>
