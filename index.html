@@ -85,7 +85,7 @@
             </div>
         </div>
 
-        <div id="historial-pedidos-view" class="view admin-only">
+        <div id="historial-pedidos-view" class="view ">
             <h2 class="text-3xl font-semibold mb-6 text-gray-700">Historial de Pedidos y Reportes</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -118,7 +118,7 @@
             </div>
         </div>
 
-        <div id="reporte-grafico-view" class="view admin-only">
+        <div id="reporte-grafico-view" class="view -only">
             <h2 class="text-3xl font-semibold mb-6 text-gray-700">Reporte Gráfico: Platos Más Vendidos</h2>
             <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                 <h3 class="text-xl font-semibold mb-4 text-indigo-600">Filtrar por Mes</h3>
@@ -137,13 +137,13 @@
             </div>
         </div>
 
-        <div id="gestion-menu-view" class="view admin-only">
+        <div id="gestion-menu-view" class="view ">
             <h2 class="text-3xl font-semibold mb-6 text-gray-700">Gestión de Menú</h2>
             <button id="btn-nuevo-menu-item" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow mb-6"><i class="fas fa-plus mr-2"></i>Añadir Nuevo Ítem</button>
             <div id="menu-items-list-admin" class="space-y-3"></div>
         </div>
 
-        <div id="gestion-mesas-view" class="view admin-only">
+        <div id="gestion-mesas-view" class="view ">
             <h2 class="text-3xl font-semibold mb-6 text-gray-700">Gestión de Mesas</h2>
             <div class="mb-6 flex items-center gap-4">
                 <input type="number" id="input-numero-mesa-nueva" placeholder="Número de Mesa" class="p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500">
@@ -462,9 +462,9 @@
             }
 
             const currentActiveView = document.querySelector('.view.active');
-            // if (currentActiveView && currentActiveView.id !== viewId) {
-            //     this.cleanupView(currentActiveView.id);
-            // }
+            if (currentActiveView && currentActiveView.id !== viewId) {
+                this.cleanupView(currentActiveView.id);
+            }
 
             this.dom.views.forEach(view => view.classList.remove('active'));
             const targetView = document.getElementById(viewId);
@@ -512,15 +512,15 @@
             document.body.dataset.role = role; // For potential CSS targeting
 
             // Show/hide nav links and views based on role
-            // document.querySelectorAll('.admin-only').forEach(el => {
-            //     el.style.display = (role === 'admin') ? (el.tagName === 'A' || el.tagName === 'BUTTON' ? 'block' : 'block') : 'none';
-            // });
-            // document.querySelectorAll('.mesero-only').forEach(el => {
-            //     el.style.display = (role === 'mesero' || role === 'admin') ? (el.tagName === 'A' || el.tagName === 'BUTTON' ? 'block' : 'block') : 'none';
-            // });
-            // document.querySelectorAll('.cocina-only').forEach(el => {
-            //     el.style.display = (role === 'cocina' || role === 'admin') ? (el.tagName === 'A' || el.tagName === 'BUTTON' ? 'block' : 'block') : 'none';
-            // });
+            document.querySelectorAll('.admin-only').forEach(el => {
+                el.style.display = (role === 'admin') ? (el.tagName === 'A' || el.tagName === 'BUTTON' ? 'block' : 'block') : 'none';
+            });
+            document.querySelectorAll('.mesero-only').forEach(el => {
+                el.style.display = (role === 'mesero' || role === 'admin') ? (el.tagName === 'A' || el.tagName === 'BUTTON' ? 'block' : 'block') : 'none';
+            });
+            document.querySelectorAll('.cocina-only').forEach(el => {
+                el.style.display = (role === 'cocina' || role === 'admin') ? (el.tagName === 'A' || el.tagName === 'BUTTON' ? 'block' : 'block') : 'none';
+            });
 
             // Restrict access to views if current view is not allowed for new role
             const activeView = document.querySelector('.view.active');
